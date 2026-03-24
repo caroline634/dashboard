@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kheops — Performance Q1 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111418;
+    --border: #1e2530;
+    --gold: #c9a96e;
+    --gold-light: #e8cfa0;
+    --gold-dim: rgba(201,169,110,0.15);
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.12);
+    --text: #e8e4dc;
+    --muted: #6b7280;
+    --muted2: #4b5563;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* Grid background lines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,169,110,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,169,110,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 64px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-block {}
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .logo span {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+  .tagline {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .header-right {
+    text-align: right;
+  }
+  .period-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .period {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--text);
+  }
+
+  /* SECTION TITLE */
+  .section-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* KPI CARDS ROW */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+  .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .kpi-card.highlight::before {
+    background: linear-gradient(90deg, var(--green), transparent);
+  }
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .kpi-card.highlight::after {
+    background: var(--green-dim);
+  }
+
+  .kpi-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .kpi-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.4rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .kpi-value .unit {
+    font-size: 1.4rem;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+  .kpi-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-dim);
+    border: 1px solid rgba(74,222,128,0.2);
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    color: var(--green);
+    margin-bottom: 12px;
+  }
+  .kpi-badge.neutral {
+    background: var(--gold-dim);
+    border-color: rgba(201,169,110,0.2);
+    color: var(--gold);
+  }
+  .kpi-sub {
+    font-size: 0.62rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* CHARTS GRID */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px;
+    animation: fadeUp 0.6s ease both;
+    animation-delay: 0.4s;
+  }
+  .chart-title {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .chart-title .trend-pill {
+    background: var(--green-dim);
+    border: 1px solid rgba(74,222,128,0.2);
+    color: var(--green);
+    padding: 3px 10px;
+    font-size: 0.65rem;
+    border-radius: 2px;
+  }
+  .chart-wrap {
+    height: 240px;
+    position: relative;
+  }
+
+  /* BOTTOM GRID */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+
+  /* METRIC TABLE */
+  .metric-table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px;
+    animation: fadeUp 0.6s ease both;
+    animation-delay: 0.5s;
+  }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-name {
+    font-size: 0.63rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .metric-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .metric-val .up { color: var(--green); font-size: 0.7rem; margin-left: 6px; font-family: 'DM Mono'; }
+
+  /* GEO BREAKDOWN */
+  .geo-bar {
+    margin-bottom: 20px;
+  }
+  .geo-label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.62rem;
+    color: var(--muted);
+  }
+  .geo-val { color: var(--text); }
+  .bar-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+  }
+  .bar-fill.green {
+    background: linear-gradient(90deg, var(--green), #86efac);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-note {
+    font-size: 0.58rem;
+    color: var(--muted2);
+    letter-spacing: 0.1em;
+  }
+  .live-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.58rem;
+    color: var(--green);
+    letter-spacing: 0.15em;
+  }
+  .live-dot::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-block">
+      <img src="data:image/png;base64,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ld6BtbBgYErfccf8ABUyV9UOu6lxJ5GL8PmERWJ1BZILtGHcwiqGbNkAzkeh9R/gs5U009M8smjc3BxnGx+wr7oqGpq3gRRnl7uOwC42p28dyODXl1nj5ab37NRXChqqCcxVULmHJAJHsux3B7rrKws1itdTbhQ1lJFUx9SXt3ye4PUH7FAdRcMp2F89kqGyt3Ip5jh3U7B3T0G+O+629Ew8X1j+n3P4kfecX/wBK/EfVH6e/6d/7NcIsnX6fvdBJyVVrqmHGciMub+8ZC6dLR1lWcUtJPP8A93GXf4Krw+TicjHf7u9Ji3xMTv8AZkdFySxattToAS81TG436E4PT4EqwC13w30TU2+sbd7uwRzMB8iDIJaSMczsbdDsFsRa0jUPuf2A6Vyun9PtPJiaze24ifMRqI7x7TPx+QsPcdK6XuVbJW3HTdnrKqTHPNPQxyPdgADLi0k4AA+wLMIrvd6dS1Wy22ml+iWq30lBT8xd5VNC2JmT1OGgDK5K+jpK+kko66lgqqaUYkhmjD2PHXBadiudEEf/ABG0V/2P09/7bD/9V36uwWKrtkNrqrLbaiggIMNLLSsdFGQCAWsIwMAkbDuVkURGoYi2aX0za6ttZbNO2ihqWghs1PRRxvAOxAc0ArLoiJYSs0hpOtqpKus0vZKmolcXSSy0ET3vJ6kktySslbLdb7XSNo7ZQ0tDTNJLYaeJsbATuSGtAC7KIjUCj950Pou9TOnu+kbDXzP5sy1Fvikf7W5PMW5yTvlSBEJjbE6f0zpvT3m/gDT9ptPnY8z6DRxwc+OmeQDKyyIifAule7Rar5b32+822kuNI/3oamFsjDsRnBHXc7ruog1+zgrwqbW/Sxoa0eZgjlMZMe/5hPL/AAU7o6amoqWOko6eKmp4mhscUTAxjAOgAGwC5UTaIiI8Opef9z1v6PJ/KV5cWb/fFF+kR/zBepdwhdUUFRTsIDpYnMaT0yQQqk2/wj6hp6+nqH6vtZbFK15Ap5M4BBV6TEOPnpa2tLS6i0rpjUfL+MGnbTdSxvKx1ZRxyuYN/dLgSOp6eq62l9EaP0vIZdPaZtNsmLeUzU9KxshHoX45iPmpCio5Go3sRERLD6k0rprUsYj1BYLZdQ3HKaulZIW4zjBIyOp6ep9VH7dwi4Y2+cT02hrF5gIIMtK2XBHcB+QFOETaJrE+z8Y1rGNYxoa1ow1oGAB6L9RESIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIB3GCiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiD/9k=" alt="Kheops" style="height: 44px; width: auto; filter: brightness(0) invert(1);">
+      <div class="tagline" style="margin-top:10px;">Plateforme B2B de mise en relation producteurs · distributeurs</div>
+    </div>
+    <div class="header-right">
+      <div class="period-label">Résultats</div>
+      <div class="period">Q1 2026</div>
+    </div>
+  </header>
+
+  <!-- KPI HIGHLIGHTS -->
+  <div class="section-label">Indicateurs clés — Q1 2026</div>
+  <div class="kpi-grid">
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">Nouveaux magasins signés — Q1 2026</div>
+      <div class="kpi-value">71<span class="unit">magasins</span></div>
+      <div class="kpi-badge">▲ ×2,2 vs BP</div>
+      <div class="kpi-sub">
+        Total magasins actifs&nbsp;: <strong style="color:var(--text)">232</strong><br>&nbsp;
+      </div>
+      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);">vs Business Plan Q1</span>
+          <span style="font-size:0.75rem; color:var(--green); font-weight:400;">215 %</span>
+        </div>
+        <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
+          <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--green), #86efac); border-radius:2px;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.58rem; color:var(--muted2);">
+          <span>Objectif : 33 magasins</span>
+          <span style="color:var(--green);">+38 au-dessus</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">New GMV — Mars 2026</div>
+      <div class="kpi-value">1 464<span class="unit">k€</span></div>
+      <div class="kpi-badge">▲ ×3,0 vs an passé</div>
+      <div class="kpi-sub">
+        Run-rate annuel&nbsp;: <strong style="color:var(--text)">17,6 M€</strong><br>
+        Janv. : 1 594 k€ · Fév. : 1 570 k€ · Mars : 1 464 k€
+      </div>
+    </div>
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">MRR — Fin mars 2026</div>
+      <div class="kpi-value">93 720<span class="unit">€</span></div>
+      <div class="kpi-badge">▲ ×1,8 vs an passé</div>
+      <div class="kpi-sub">
+        ARR implicite&nbsp;: <strong style="color:var(--text)">1 124 k€</strong><br>
+        Janv. : 77 252 € · Fév. : 89 879 € · Mars : 93 720 €
+      </div>
+      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);">vs Business Plan Mars</span>
+          <span style="font-size:0.75rem; color:var(--green); font-weight:400;">106 %</span>
+        </div>
+        <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
+          <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--green), #86efac); border-radius:2px;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.58rem; color:var(--muted2);">
+          <span>Objectif : 88 418 €</span>
+          <span style="color:var(--green);">+5 302 € au-dessus</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">Commissions — Q1 2026</div>
+      <div class="kpi-value">100 657<span class="unit">€</span></div>
+      <div class="kpi-badge">↑ +74 % vs Q1 2025</div>
+      <div class="kpi-sub">
+        Taux effectif&nbsp;: <strong style="color:var(--text)">~7,3 %</strong><br>
+        Janv. : 33 352 € · Fév. : 34 934 € · Mars : 32 371 €
+      </div>
+      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);">vs Business Plan Q1</span>
+          <span style="font-size:0.75rem; color:var(--green); font-weight:400;">129 %</span>
+        </div>
+        <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
+          <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--green), #86efac); border-radius:2px;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.58rem; color:var(--muted2);">
+          <span>Objectif : 77 979 €</span>
+          <span style="color:var(--green);">+22 678 € au-dessus</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CHARTS -->
+  <div class="section-label">Trajectoire de croissance</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">
+        <span>Commissions mensuelles — 18 derniers mois</span>
+        <span class="trend-pill">+×3,1 rolling 12m</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="gmvChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">
+        <span>MRR — 18 derniers mois</span>
+        <span class="trend-pill">ARR > 1 M€</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="mrrChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM METRICS -->
+  <div class="section-label">Métriques complémentaires</div>
+  <div class="bottom-grid">
+
+    <!-- Metrics table -->
+    <div class="metric-table-card">
+      <div class="chart-title"><span>SaaS Health</span></div>
+      <div class="metric-row">
+        <span class="metric-name">Stores actifs (licences)</span>
+        <span class="metric-val">232 <span class="up">▲+38 ce mois</span></span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-name">NRR (Net Revenue Retention)</span>
+        <span class="metric-val">~99 %</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-name">Fournisseurs actifs</span>
+        <span class="metric-val">1 572 <span class="up">▲+88</span></span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-name">Commandes Q1 2026</span>
+        <span class="metric-val">5 668</span>
+      </div>
+    </div>
+
+    <!-- Revenue mix -->
+    <div class="metric-table-card">
+      <div class="chart-title"><span>Mix revenus — Mars 2026</span></div>
+      <div class="chart-wrap" style="height:200px;">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Geo breakdown -->
+    <div class="metric-table-card">
+      <div class="chart-title"><span>Répartition GMV par région</span></div>
+      <div style="margin-top:8px;">
+        <div class="geo-bar">
+          <div class="geo-label-row">
+            <span>Île-de-France</span>
+            <span class="geo-val">764 k€</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:52%"></div></div>
+        </div>
+        <div class="geo-bar">
+          <div class="geo-label-row">
+            <span>PACA</span>
+            <span class="geo-val">641 k€</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill green" style="width:44%"></div></div>
+        </div>
+        <div class="geo-bar">
+          <div class="geo-label-row">
+            <span>Autres régions</span>
+            <span class="geo-val">55 k€</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:4%;opacity:0.6"></div></div>
+        </div>
+        <div style="margin-top:28px; padding-top:20px; border-top:1px solid var(--border);">
+          <div class="metric-row">
+            <span class="metric-name">Panier moyen commande</span>
+            <span class="metric-val">828 €</span>
+          </div>
+          <div class="metric-row" style="border:none">
+            <span class="metric-name">GMV / store / mois</span>
+            <span class="metric-val">6 289 €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-note">Données internes Kheops · Confidentiel · Mars 2026</div>
+    <div class="live-dot">Données réelles</div>
+  </footer>
+
+</div>
+
+<script>
+const gold = '#c9a96e';
+const goldLight = '#e8cfa0';
+const green = '#4ade80';
+const muted = '#374151';
+const text = '#e8e4dc';
+
+Chart.defaults.color = '#6b7280';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 10;
+
+// Months labels — commissions chart (sans Mar 26)
+const gmvLabels = [
+  'Aoû 25','Sep 25','Oct 25','Nov 25','Déc 25',
+  'Jan 26','Fév 26'
+];
+
+// Commissions data (€)
+const gmvData2 = [7468, 11007, 10765, 13921, 19186, 33352, 34934];
+
+// MRR data
+const mrrData = [40143, 43006, 42743, 48534, 49313, 50124, 49608, 59326, 59608, 70457, 71391, 73087, 73381, 77252, 89879, 89720, 89879, 89720];
+// Jan 26=77252, Fév=89879, Mar=89720
+const mrrData2 = [43006, 42743, 48534, 49313, 50154, 49608, 59326, 59608, 70457, 71391, 73087, 73381, 77252, 89879, 93700];
+const mrrLabels = [
+  'Jan 25','Fév 25','Mar 25','Avr 25','Mai 25','Jun 25',
+  'Jul 25','Aoû 25','Sep 25','Oct 25','Nov 25','Déc 25',
+  'Jan 26','Fév 26','Mar 26'
+];
+
+// GMV CHART
+const gmvCtx = document.getElementById('gmvChart').getContext('2d');
+const gmvGradient = gmvCtx.createLinearGradient(0, 0, 0, 240);
+gmvGradient.addColorStop(0, 'rgba(201,169,110,0.25)');
+gmvGradient.addColorStop(1, 'rgba(201,169,110,0.0)');
+
+new Chart(gmvCtx, {
+  type: 'line',
+  data: {
+    labels: gmvLabels,
+    datasets: [{
+      data: gmvData2,
+      borderColor: gold,
+      borderWidth: 2,
+      fill: true,
+      backgroundColor: gmvGradient,
+      pointRadius: (ctx) => ctx.dataIndex >= 5 ? 5 : 2,
+      pointBackgroundColor: (ctx) => ctx.dataIndex >= 5 ? gold : 'transparent',
+      pointBorderColor: gold,
+      tension: 0.4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#111418',
+        borderColor: '#1e2530',
+        borderWidth: 1,
+        titleColor: text,
+        bodyColor: gold,
+        callbacks: {
+          label: (ctx) => `  ${ctx.raw.toLocaleString('fr-FR')} €`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(255,255,255,0.03)' },
+        border: { color: '#1e2530' },
+        ticks: { maxRotation: 0, color: '#4b5563' }
+      },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.04)' },
+        border: { color: '#1e2530' },
+        ticks: {
+          color: '#4b5563',
+          callback: v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v
+        }
+      }
+    }
+  }
+});
+
+// MRR CHART
+const mrrCtx = document.getElementById('mrrChart').getContext('2d');
+const mrrGradient = mrrCtx.createLinearGradient(0, 0, 0, 240);
+mrrGradient.addColorStop(0, 'rgba(74,222,128,0.2)');
+mrrGradient.addColorStop(1, 'rgba(74,222,128,0.0)');
+
+new Chart(mrrCtx, {
+  type: 'line',
+  data: {
+    labels: mrrLabels,
+    datasets: [{
+      data: mrrData2,
+      borderColor: green,
+      borderWidth: 2,
+      fill: true,
+      backgroundColor: mrrGradient,
+      pointRadius: (ctx) => ctx.dataIndex >= 15 ? 5 : 2,
+      pointBackgroundColor: (ctx) => ctx.dataIndex >= 15 ? green : 'transparent',
+      pointBorderColor: green,
+      tension: 0.4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#111418',
+        borderColor: '#1e2530',
+        borderWidth: 1,
+        titleColor: text,
+        bodyColor: green,
+        callbacks: {
+          label: (ctx) => `  ${ctx.raw.toLocaleString('fr-FR')} €`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(255,255,255,0.03)' },
+        border: { color: '#1e2530' },
+        ticks: { maxRotation: 0, color: '#4b5563' }
+      },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.04)' },
+        border: { color: '#1e2530' },
+        ticks: {
+          color: '#4b5563',
+          callback: v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v
+        }
+      }
+    }
+  }
+});
+
+// REVENUE MIX DOUGHNUT
+const revCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Abonnements (MRR)', 'Commissions intro', 'Services'],
+    datasets: [{
+      data: [89554, 30394, 5565],
+      backgroundColor: [gold, green, '#6366f1'],
+      borderColor: '#111418',
+      borderWidth: 3,
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: '#6b7280',
+          boxWidth: 10,
+          boxHeight: 10,
+          padding: 16,
+          font: { size: 10 }
+        }
+      },
+      tooltip: {
+        backgroundColor: '#111418',
+        borderColor: '#1e2530',
+        borderWidth: 1,
+        bodyColor: text,
+        callbacks: {
+          label: (ctx) => `  ${ctx.raw.toLocaleString('fr-FR')} €`
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
