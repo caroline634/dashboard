@@ -356,13 +356,53 @@
 </style>
 </head>
 <body>
+
+<!-- PASSWORD SCREEN -->
+<div id="passwordScreen" style="
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0a0c0f;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+">
+  <div style="text-align:center; margin-bottom: 40px;">
+    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACaAbIDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAYIBQcDBAkCAf/EAEsQAAEDAwIEAwQECgcECwAAAAEAAgMEBREGIQcSMUEIE1EiMmGBFDdxtBUWOGJ0dYSRobIjJEJSsbPBNDVjckNTVnOCkpOVotLh/8k=" alt="Kheops" style="height:48px; filter: brightness(0) invert(1); margin-bottom:24px; display:block; margin-left:auto; margin-right:auto;">
+    <div style="font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase; color:#6b7280; margin-bottom:32px;">Accès sécurisé · Q1 2026</div>
+  </div>
+  <div style="
+    background: #111418;
+    border: 1px solid #1e2530;
+    padding: 40px 48px;
+    width: 360px;
+    position: relative;
+  ">
+    <div style="position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, #c9a96e, transparent);"></div>
+    <label style="font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:#6b7280; display:block; margin-bottom:12px;">Mot de passe</label>
+    <input id="pwdInput" type="password" placeholder="••••••••••••" style="
+      width: 100%; padding: 12px 16px;
+      background: #0a0c0f; border: 1px solid #1e2530;
+      color: #e8e4dc; font-family: 'DM Mono', monospace; font-size: 0.85rem;
+      outline: none; box-sizing: border-box; margin-bottom: 16px;
+    " onkeydown="if(event.key==='Enter') checkPassword()">
+    <div id="pwdError" style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#f97316; margin-bottom:12px; min-height:16px; letter-spacing:0.1em;"></div>
+    <button onclick="checkPassword()" style="
+      width: 100%; padding: 12px;
+      background: linear-gradient(90deg, #c9a96e, #e8cfa0);
+      border: none; color: #0a0c0f;
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: pointer; font-weight: 500;
+    ">Accéder</button>
+  </div>
+</div>
+
+<div id="dashboardContent" style="display:none;">
 <div class="wrapper">
 
   <!-- HEADER -->
   <header>
     <div class="logo-block">
       <img src="data:image/png;base64,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ld6BtbBgYErfccf8ABUyV9UOu6lxJ5GL8PmERWJ1BZILtGHcwiqGbNkAzkeh9R/gs5U009M8smjc3BxnGx+wr7oqGpq3gRRnl7uOwC42p28dyODXl1nj5ab37NRXChqqCcxVULmHJAJHsux3B7rrKws1itdTbhQ1lJFUx9SXt3ye4PUH7FAdRcMp2F89kqGyt3Ip5jh3U7B3T0G+O+629Ew8X1j+n3P4kfecX/wBK/EfVH6e/6d/7NcIsnX6fvdBJyVVrqmHGciMub+8ZC6dLR1lWcUtJPP8A93GXf4Krw+TicjHf7u9Ji3xMTv8AZkdFySxattToAS81TG436E4PT4EqwC13w30TU2+sbd7uwRzMB8iDIJaSMczsbdDsFsRa0jUPuf2A6Vyun9PtPJiaze24ifMRqI7x7TPx+QsPcdK6XuVbJW3HTdnrKqTHPNPQxyPdgADLi0k4AA+wLMIrvd6dS1Wy22ml+iWq30lBT8xd5VNC2JmT1OGgDK5K+jpK+kko66lgqqaUYkhmjD2PHXBadiudEEf/ABG0V/2P09/7bD/9V36uwWKrtkNrqrLbaiggIMNLLSsdFGQCAWsIwMAkbDuVkURGoYi2aX0za6ttZbNO2ihqWghs1PRRxvAOxAc0ArLoiJYSs0hpOtqpKus0vZKmolcXSSy0ET3vJ6kktySslbLdb7XSNo7ZQ0tDTNJLYaeJsbATuSGtAC7KIjUCj950Pou9TOnu+kbDXzP5sy1Fvikf7W5PMW5yTvlSBEJjbE6f0zpvT3m/gDT9ptPnY8z6DRxwc+OmeQDKyyIifAule7Rar5b32+822kuNI/3oamFsjDsRnBHXc7ruog1+zgrwqbW/Sxoa0eZgjlMZMe/5hPL/AAU7o6amoqWOko6eKmp4mhscUTAxjAOgAGwC5UTaIiI8Opef9z1v6PJ/KV5cWb/fFF+kR/zBepdwhdUUFRTsIDpYnMaT0yQQqk2/wj6hp6+nqH6vtZbFK15Ap5M4BBV6TEOPnpa2tLS6i0rpjUfL+MGnbTdSxvKx1ZRxyuYN/dLgSOp6eq62l9EaP0vIZdPaZtNsmLeUzU9KxshHoX45iPmpCio5Go3sRERLD6k0rprUsYj1BYLZdQ3HKaulZIW4zjBIyOp6ep9VH7dwi4Y2+cT02hrF5gIIMtK2XBHcB+QFOETaJrE+z8Y1rGNYxoa1ow1oGAB6L9RESIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIB3GCiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiD/9k=" alt="Kheops" style="height: 44px; width: auto; filter: brightness(0) invert(1);">
-      <div class="tagline" style="margin-top:10px;">Plateforme B2B de mise en relation producteurs · distributeurs</div>
+      <div class="tagline" style="margin-top:10px;"></div>
     </div>
     <div class="header-right">
       <div class="period-label">Résultats</div>
@@ -742,5 +782,24 @@ new Chart(revCtx, {
   }
 });
 </script>
+
+<script>
+function checkPassword() {
+  const input = document.getElementById('pwdInput').value;
+  const error = document.getElementById('pwdError');
+  if (input === 'KheopsQ12026!') {
+    document.getElementById('passwordScreen').style.display = 'none';
+    document.getElementById('dashboardContent').style.display = 'block';
+  } else {
+    error.textContent = 'Mot de passe incorrect.';
+    document.getElementById('pwdInput').value = '';
+    document.getElementById('pwdInput').focus();
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pwdInput').focus();
+});
+</script>
+</div><!-- end dashboardContent -->
 </body>
 </html>
