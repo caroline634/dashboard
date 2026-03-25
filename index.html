@@ -129,7 +129,7 @@
   /* KPI CARDS ROW */
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     margin-bottom: 48px;
   }
@@ -410,111 +410,55 @@
     </div>
   </header>
 
-  <!-- KPI HIGHLIGHTS -->
+  <!-- KPI + CHART SIDE BY SIDE -->
   <div class="section-label">Indicateurs clés — Q1 2026</div>
-  <div class="kpi-grid">
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:48px;">
 
-    <div class="kpi-card highlight">
-      <div class="kpi-label">New GMV — Mars 2026</div>
-      <div class="kpi-value">1 464<span class="unit">k€</span></div>
-      <div class="kpi-badge">▲ ×3,0 vs an passé</div>
-      <div class="kpi-sub">
-        Run-rate annuel&nbsp;: <strong style="color:var(--text)">17,6 M€</strong><br>
-        Janv. : 1 594 k€ · Fév. : 1 570 k€ · Mars : 1 464 k€
+    <div style="display:flex; flex-direction:column; gap:20px;">
+      <div class="kpi-card highlight" style="animation-delay:0.1s;">
+        <div class="kpi-label">New GMV — Mars 2026</div>
+        <div class="kpi-value">1 464<span class="unit">k€</span></div>
+        <div class="kpi-badge">▲ ×3,0 vs an passé</div>
+        <div class="kpi-sub">
+          Run-rate annuel&nbsp;: <strong style="color:var(--text)">17,6 M€</strong><br>
+          Janv. : 1 594 k€ · Fév. : 1 570 k€ · Mars : 1 464 k€
+        </div>
       </div>
-    </div>
 
-    <div class="kpi-card highlight">
-      <div class="kpi-label">Nouveaux magasins signés — Q1 2026</div>
-      <div class="kpi-value">71<span class="unit">magasins</span></div>
-      <div class="kpi-badge">▲ ×2,2 vs BP</div>
-      <div class="kpi-sub">
-        Total magasins actifs&nbsp;: <strong style="color:var(--text)">260</strong><br>&nbsp;
-      </div>
-      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);">vs Business Plan Q1</span>
-          <span style="font-size:0.75rem; color:var(--green); font-weight:400;">215 %</span>
+      <div class="kpi-card highlight" style="animation-delay:0.2s;">
+        <div class="kpi-label">Commissions — Q1 2026</div>
+        <div class="kpi-value">100 657<span class="unit">€</span></div>
+        <div class="kpi-badge">↑ +74 % vs Q1 2025</div>
+        <div class="kpi-sub">
+          Taux effectif&nbsp;: <strong style="color:var(--text)">~7,3 %</strong><br>
+          Janv. : 33 352 € · Fév. : 34 934 € · Mars : 32 371 €
         </div>
-        <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
-          <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--green), #86efac); border-radius:2px;"></div>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.58rem; color:var(--muted2);">
-          <span>Objectif : 33 magasins</span>
-          <span style="color:var(--green);">+38 au-dessus</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="kpi-card highlight">
-      <div class="kpi-label">MRR — Fin mars 2026</div>
-      <div class="kpi-value">93 720<span class="unit">€</span></div>
-      <div class="kpi-badge">▲ +33 % vs début Q4 2025</div>
-      <div class="kpi-sub">
-        ARR implicite&nbsp;: <strong style="color:var(--text)">1 124 k€</strong><br>
-        Janv. : 77 252 € · Fév. : 89 879 € · Mars : 93 720 €
-      </div>
-      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);">vs Business Plan Mars</span>
-          <span style="font-size:0.75rem; color:var(--green); font-weight:400;">106 %</span>
-        </div>
-        <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
-          <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--green), #86efac); border-radius:2px;"></div>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.58rem; color:var(--muted2);">
-          <span>Objectif : 88 418 €</span>
-          <span style="color:var(--green);">+5 302 € au-dessus</span>
+        <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);">vs Business Plan Q1</span>
+            <span style="font-size:0.75rem; color:var(--green); font-weight:400;">129 %</span>
+          </div>
+          <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
+            <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--green), #86efac); border-radius:2px;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.58rem; color:var(--muted2);">
+            <span>Objectif : 77 979 €</span>
+            <span style="color:var(--green);">+22 678 € au-dessus</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="kpi-card highlight">
-      <div class="kpi-label">Commissions — Q1 2026</div>
-      <div class="kpi-value">100 657<span class="unit">€</span></div>
-      <div class="kpi-badge">↑ +74 % vs Q1 2025</div>
-      <div class="kpi-sub">
-        Taux effectif&nbsp;: <strong style="color:var(--text)">~7,3 %</strong><br>
-        Janv. : 33 352 € · Fév. : 34 934 € · Mars : 32 371 €
-      </div>
-      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);">vs Business Plan Q1</span>
-          <span style="font-size:0.75rem; color:var(--green); font-weight:400;">129 %</span>
-        </div>
-        <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
-          <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--green), #86efac); border-radius:2px;"></div>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.58rem; color:var(--muted2);">
-          <span>Objectif : 77 979 €</span>
-          <span style="color:var(--green);">+22 678 € au-dessus</span>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- CHARTS -->
-  <div class="section-label">Trajectoire de croissance</div>
-  <div class="charts-grid">
-    <div class="chart-card">
+    <div class="chart-card" style="animation-delay:0.3s;">
       <div class="chart-title">
-        <span>Commissions mensuelles — 18 derniers mois</span>
+        <span>Commissions mensuelles — trajectoire</span>
         <span class="trend-pill">+×3,1 rolling 12m</span>
       </div>
-      <div class="chart-wrap">
+      <div class="chart-wrap" style="height:320px;">
         <canvas id="gmvChart"></canvas>
       </div>
     </div>
-    <div class="chart-card">
-      <div class="chart-title">
-        <span>MRR — 18 derniers mois</span>
-        <span class="trend-pill">ARR > 1 M€</span>
-      </div>
-      <div class="chart-wrap">
-        <canvas id="mrrChart"></canvas>
-      </div>
-    </div>
+
   </div>
 
   <!-- BOTTOM METRICS -->
